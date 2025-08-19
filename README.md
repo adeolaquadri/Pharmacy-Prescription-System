@@ -37,44 +37,47 @@ npm run dev
 ```
 
 ## Auth
-- `POST /api/auth/login` with `{ email, password }` returns a JWT.
+- `POST /auth/login` with `{ email, password }` returns a JWT.
 - Include header: `Authorization: Bearer <token>` for protected routes.
 - All management routes are protected for `admin` by default in this scaffold.
 
 ## Endpoints (Summary)
 
 ### Patients
-- `POST /api/patients` (admin) – create patient (+auto wallet)
-- `GET /api/patients` (admin) – list
-- `GET /api/patients/search?q=...` (admin) – search by name/email
-- `GET /api/patients/:id` (admin)
+- `POST /patients` (admin) – create patient (+auto wallet)
+- `GET /patients` (admin) – list
+- `GET /patients/search?q=...` (admin) – search by name/email
+- `GET /patients/:id` (admin)
 
 ### Medications (Inventory)
-- `POST /api/medications` (admin) – add medication
-- `PATCH /api/medications/:id` (admin) – update stock/price
-- `GET /api/medications/low-stock` (admin) – items with stock < 10
+- `POST /medications` (admin) – add medication
+- `GET /medications` (admin) - get all medications
+- `PATCH /medications/:id` (admin) – update stock/price
+- `GET /medications/low-stock` (admin) – items with stock < 10
 
 ### Prescriptions
-- `POST /api/prescriptions` (admin) – create (computes totalPrice)
-- `GET /api/prescriptions?patientId=&status=` (admin) – list/filter
-- `PATCH /api/prescriptions/:id/status` (admin) – transition status
+- `POST /prescriptions` (admin) – create (computes totalPrice)
+- `GET /prescriptions?patientId=&status=` (admin) – list/filter
+- `PATCH /prescriptions/:id/status` (admin) – transition status
   - When moving `pending -> filled`, inventory stock is decremented
   - Payment moves `filled -> picked-up` (via Wallets)
 
 ### Wallets
-- `GET /api/wallets/:patientId` (admin) – get wallet
-- `GET /api/wallets/:patientId/transactions` (admin) – tx history
-- `POST /api/wallets/:patientId/fund` (admin) – `{ amount }` credit
-- `POST /api/wallets/:patientId/pay` (admin) – `{ prescriptionId }` debits and marks Rx `picked-up`
+- `GET /wallets/:patientId` (admin) – get wallet
+- `GET /wallets/:patientId/transactions` (admin) – tx history
+- `POST /wallets/:patientId/fund` (admin) – `{ amount }` credit
+- `POST /wallets/:patientId/pay` (admin) – `{ prescriptionId }` debits and marks Rx `picked-up`
 
 ### Booking
-- `POST /api/slots` (admin) – create appointment slot
-- `GET /api/slots?date=YYYY-MM-DD` (admin) – list available slots by date
-- `POST /api/bookings` (admin) – create booking `{ slotId, patientId }`
-- `DELETE /api/bookings/:id` (admin) – cancel booking (frees slot)
+- `POST /slots` (admin) – create appointment slot
+- `GET /slots?date=YYYY-MM-DD` (admin) – list available slots by date
+- `POST /bookings` (admin) – create booking `{ slotId, patientId }`
+- `GET /bookings` (admin) - All bookings
+- `GET /bookings/:id` (admin) - A booking
+- `DELETE /bookings/:id` (admin) – cancel booking (frees slot)
 
 ## Postman
-A Postman collection is included at: `postman/Pharmacy.postman_collection.json`
+A Postman collection is included at: `postman/Pharmacy.postman_collection.json` and at: `https://postman.co/workspace/My-Workspace~2854002b-fb94-4a5d-8ae4-aa6327822fa6/collection/38281521-688197a6-e339-4c53-8670-4dd0cee167ce?action=share&creator=38281521&active-environment=38281521-eb84dc41-c570-481a-bb88-f515f8629dfb`
 
 ## Notes
 - Proper error handling and validation are included for key endpoints.

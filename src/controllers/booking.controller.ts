@@ -1,6 +1,44 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import { AppointmentSlot, Booking } from '../models';
+import { AppointmentSlot, Booking, Patient } from '../models';
+
+
+// Get all bookings
+export async function getAllBookings(req: Request, res: Response) {
+  try {
+    const bookings = await Booking.findAll({
+      include: [
+        { model: Patient, attributes: ["id", "name", "email", "phone"] },
+        { model: AppointmentSlot, attributes: ["id", "date", "time", "serviceType", "isBooked"] }
+      ],
+      order: [["createdAt", "DESC"]]
+    });
+
+    res.status(200).json(bookings);
+  } catch (error: any) {
+    console.error("Error fetching bookings:", error);
+    res.status(500).json({ message: "Error fetching bookings" });
+  }
+}
+
+// Get a single booking by ID
+export async function getBookingById(req: Request, res: Response) {
+  try {
+    const booking = await Booking.findByPk(req.params.id, {
+      include: [
+        { model: Patient, attributes: ["id", "name", "email", "phone"] },
+        { model: AppointmentSlot, attributes: ["id", "date", "time", "serviceType", "isBooked"] }
+      ]
+    });
+
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    res.status(200).json(booking);
+  } catch (error: any) {
+    console.error("Error fetching booking:", error);
+    res.status(500).json({ message: "Error fetching booking" });
+  }
+}
 
 export async function createSlot(req: Request, res: Response) {
   const errors = validationResult(req);

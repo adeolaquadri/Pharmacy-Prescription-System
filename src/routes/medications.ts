@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { createMedication, lowStock, updateMedication } from '../controllers/medication.controller';
+import { createMedication, lowStock, updateMedication, getAllMedications } from '../controllers/medication.controller';
 import { auth } from '../middlewares/auth';
 
 const router = Router();
@@ -13,6 +13,7 @@ router.post('/', auth('admin'),
 );
 
 router.get('/low-stock', auth('admin'), lowStock);
+router.get('/', auth('admin'), getAllMedications);
 router.patch('/:id', auth('admin'),
   body('stock').optional().isInt({ min: 0 }),
   body('unitPrice').optional().isFloat({ gt: 0 }),

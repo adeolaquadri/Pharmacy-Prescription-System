@@ -1,70 +1,364 @@
 {
   "info": {
-    "name": "Pharmacy",
+    "name": "Pharmacy Prescription System API",
     "_postman_id": "pharmacy-collection",
+    "description": "API documentation for the Pharmacy Prescription System. Includes authentication, patient management, medications, prescriptions, wallets, slots, and bookings with sample requests and responses.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Auth - Login",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "url": {
-          "raw": "http://localhost:4000/auth/login",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "4000",
-          "path": [
-            "api",
-            "auth",
-            "login"
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "http://localhost:4000/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"email\": \"admin@example.com\", \"password\": \"Admin@123\" }"
+            },
+            "description": "Authenticate an admin and retrieve a JWT token."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {},
+              "status": "OK",
+              "code": 200,
+              "body": "{ \"token\": \"<jwt-token>\" }"
+            },
+            {
+              "name": "Invalid Credentials",
+              "status": "Unauthorized",
+              "code": 401,
+              "body": "{ \"message\": \"Invalid email or password\" }"
+            }
           ]
-        },
-        "body": {
-          "mode": "raw",
-          "raw": "{\"email\": \"admin@example.com\", \"password\": \"Admin@123\"}"
         }
-      }
+      ]
     },
     {
-      "name": "Patients - Create",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
+      "name": "Patients",
+      "item": [
+        {
+          "name": "Create Patient",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "http://localhost:4000/patients",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"name\": \"Alice\", \"email\": \"alice@example.com\", \"phone\": \"08030000003\", \"dateOfBirth\": \"1995-09-09\" }"
+            },
+            "description": "Register a new patient."
           },
-          {
-            "key": "Authorization",
-            "value": "Bearer {{token}}"
-          }
-        ],
-        "url": {
-          "raw": "http://localhost:4000/patients",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "4000",
-          "path": [
-            "api",
-            "patients"
+          "response": [
+            {
+              "name": "Created",
+              "status": "Created",
+              "code": 201,
+              "body": "{ \"id\": \"uuid\", \"name\": \"Alice\", \"email\": \"alice@example.com\", \"phone\": \"08030000003\" }"
+            },
+            {
+              "name": "Validation Error",
+              "status": "Bad Request",
+              "code": 400,
+              "body": "{ \"errors\": [ { \"msg\": \"Email is required\" } ] }"
+            }
           ]
         },
-        "body": {
-          "mode": "raw",
-          "raw": "{\"name\": \"Alice\", \"email\": \"alice@example.com\", \"phone\": \"08030000003\", \"dateOfBirth\": \"1995-09-09\"}"
+        {
+          "name": "Get All Patients",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "http://localhost:4000/patients",
+            "description": "Fetch all registered patients."
+          },
+          "response": [
+            {
+              "status": "OK",
+              "code": 200,
+              "body": "[{ \"id\": \"uuid\", \"name\": \"Alice\", \"email\": \"alice@example.com\" }]"
+            }
+          ]
+        },
+        {
+          "name": "Get Patient by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "http://localhost:4000/patients/:id",
+            "description": "Fetch details of a patient by their ID."
+          }
+        },
+        {
+          "name": "Search Patients",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "http://localhost:4000/patients/search?q=alice",
+            "description": "Search patients by name, email, or phone."
+          }
         }
-      }
+      ]
+    },
+    {
+      "name": "Medications",
+      "item": [
+        {
+          "name": "Create Medication",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "http://localhost:4000/medications",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"name\": \"Amoxicillin\", \"stock\": 25, \"unitPrice\": 100.00 }"
+            },
+            "description": "Add a new medication to the system."
+          }
+        },
+        {
+          "name": "Get All Medications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "http://localhost:4000/medications",
+            "description": "Fetch all available medications."
+          }
+        },
+        {
+          "name": "Update Medication (Stock/Price)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "http://localhost:4000/medications/:id",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"stock\": 50, \"unitPrice\": 120.00 }"
+            },
+            "description": "Update stock or unit price of a medication."
+          }
+        },
+        {
+          "name": "Get Low Stock Medications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "http://localhost:4000/medications/low-stock",
+            "description": "List medications that are running low in stock."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Prescriptions",
+      "item": [
+        {
+          "name": "Create Prescription",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "http://localhost:4000/prescriptions",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"patientId\": \"uuid\", \"MedicationName\": \"Paracetamol\", \"dosage\": \"500mg\", \"quantity\": 12 }"
+            },
+            "description": "Create a new prescription for a patient."
+          }
+        },
+        {
+          "name": "Filter Prescriptions",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "http://localhost:4000/prescriptions?patientId=uuid&status=pending",
+            "description": "Filter prescriptions by patient ID and status."
+          }
+        },
+        {
+          "name": "Update Prescription Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "http://localhost:4000/prescriptions/:id/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"status\": \"filled\" }"
+            },
+            "description": "Update the status of a prescription."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wallets",
+      "item": [
+        {
+          "name": "Create Wallet for Patient",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "http://localhost:4000/wallets/:patientId/fund",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"amount\": 500.00 }"
+            },
+            "description": "Fund a patient's wallet."
+          }
+        },
+        {
+          "name": "Get Patient Wallet",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "http://localhost:4000/wallets/:patientId",
+            "description": "Retrieve wallet balance for a patient."
+          }
+        },
+        {
+          "name": "Pay Prescription via Wallet",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "http://localhost:4000/wallets/:patientId/pay",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"prescriptionId\": \"uuid\" }"
+            },
+            "description": "Deduct amount from patient wallet to pay for a prescription."
+          }
+        },
+        {
+          "name": "Get Transaction History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "http://localhost:4000/wallets/:patientId/transactions",
+            "description": "Retrieve all transactions for a patient's wallet."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Slots",
+      "item": [
+        {
+          "name": "Create Slot",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "http://localhost:4000/slots",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"date\": \"2025-08-20\", \"time\": \"10:00\", \"serviceType\": \"Consultation\" }"
+            },
+            "description": "Create a new appointment slot."
+          }
+        },
+        {
+          "name": "Get Slots by Date",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "http://localhost:4000/slots?date=2025-08-20",
+            "description": "List available slots for a specific date."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "http://localhost:4000/bookings",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"slotId\": \"uuid\", \"patientId\": \"uuid\" }"
+            },
+            "description": "Book a slot for a patient."
+          }
+        },
+        {
+          "name": "Bookings - Get All",
+          "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" },
+            { "key": "Authorization", "value": "Bearer {{token}}" }
+          ],
+          "url": {
+          "raw": "http://localhost:4000/bookings",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "4000",
+          "path": ["bookings"]
+        }   
+      },
+      "description": "Get all bookings for the admin."
+   },
+    {
+      "name": "Bookings - Get by ID",
+      "request": {
+      "method": "GET",
+      "header": [
+        { "key": "Content-Type", "value": "application/json" },
+        { "key": "Authorization", "value": "Bearer {{token}}" }
+      ],
+      "url": {
+      "raw": "http://localhost:4000/bookings/:id",
+      "protocol": "http",
+      "host": ["localhost"],
+      "port": "4000",
+      "path": ["bookings", ":id"]
+     }
+      },
+      "description": "Get booking details by ID."
+   },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "http://localhost:4000/bookings/:id",
+            "description": "Cancel a booking by ID."
+          }
+        }
+      ]
     }
   ],
   "variable": [

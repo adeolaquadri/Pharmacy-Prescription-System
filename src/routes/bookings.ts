@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body, query, param } from 'express-validator';
 import { auth } from '../middlewares/auth';
-import { createSlot, listSlotsByDate, bookSlot, cancelBooking } from '../controllers/booking.controller';
+import { createSlot, listSlotsByDate, bookSlot, cancelBooking, getBookingById, getAllBookings } from '../controllers/booking.controller';
 
 const router = Router();
 
@@ -26,6 +26,12 @@ router.post('/bookings', auth('admin'),
 router.delete('/bookings/:id', auth('admin'),
   param('id').isString(),
   cancelBooking
+);
+
+router.get('/bookings', auth('admin'), getAllBookings);
+router.get('/bookings/:id', auth('admin'),
+  param('id').isString(),
+  getBookingById
 );
 
 export default router;

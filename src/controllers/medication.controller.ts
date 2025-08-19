@@ -26,3 +26,15 @@ export async function lowStock(_req: Request, res: Response) {
   const meds = await Medication.findAll();
   res.json(meds.filter(m => Number(m.stock) < 10));
 }
+
+export async function getAllMedications(req: Request, res: Response) {
+  try {
+    const meds = await Medication.findAll({
+      order: [["createdAt", "DESC"]],
+    });
+    res.json(meds);
+  } catch (err: any) {
+    console.error("Error fetching medications:", err);
+    res.status(500).json({ message: "Failed to fetch medications" });
+  }
+}
