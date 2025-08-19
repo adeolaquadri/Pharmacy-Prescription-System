@@ -18,12 +18,12 @@ app.get('/', (_req, res) => {
   res.json({ ok: true, name: 'Pharmacy Prescription System API' });
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/patients', patientRoutes);
-app.use('/api/prescriptions', prescriptionRoutes);
-app.use('/api/medications', medicationRoutes);
-app.use('/api/wallets', walletRoutes);
-app.use('/api', bookingRoutes); // slots + bookings
+app.use('/auth', authRoutes);
+app.use('/patients', patientRoutes);
+app.use('/prescriptions', prescriptionRoutes);
+app.use('/medications', medicationRoutes);
+app.use('/wallets', walletRoutes);
+app.use('/', bookingRoutes); // slots + bookings
 
 app.use(notFound);
 app.use(errorHandler);

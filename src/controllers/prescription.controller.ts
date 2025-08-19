@@ -4,14 +4,35 @@ import { Medication, Prescription } from '../models';
 
 export async function createPrescription(req: Request, res: Response) {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-  const { patientId, medicationId, dosage, quantity } = req.body;
-  const med = await Medication.findByPk(medicationId);
-  if (!med) return res.status(404).json({ message: 'Medication not found' });
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { patientId, medicationName, dosage, quantity } = req.body;
+
+  // Find the medication by name instead of ID
+  const med = await Medication.findOne({ where: { name: medicationName } });
+
+  if (!med) {
+    return res.status(404).json({ message: 'Medication not found' });
+  }
+
+  // Calculate price
   const totalPrice = Number(med.unitPrice) * Number(quantity);
-  const p = await Prescription.create({ patientId, medicationId, dosage, quantity, totalPrice, status: 'pending' });
+
+  // Save prescription using medication.id
+  const p = await Prescription.create({
+    patientId,
+    medicationId: med.id,
+    dosage,
+    quantity,
+    totalPrice,
+    status: 'pending',
+  });
+
   res.status(201).json(p);
 }
+
 
 export async function listPrescriptions(req: Request, res: Response) {
   const { patientId, status } = req.query;

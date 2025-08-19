@@ -7,7 +7,7 @@ const router = Router();
 
 router.post('/', auth('admin'),
   body('patientId').isString().notEmpty(),
-  body('medicationId').isString().notEmpty(),
+  body('medicationName').isString().notEmpty(),
   body('dosage').isString().notEmpty(),
   body('quantity').isInt({ gt: 0 }),
   createPrescription
